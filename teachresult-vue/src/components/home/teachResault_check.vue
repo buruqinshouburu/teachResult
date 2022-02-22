@@ -4,8 +4,8 @@
     <el-row style="margin-top: 20px;height: 100%">
       <el-col style="height: 100%">
         <el-header style="text-align: left;background-color:white">
-          <el-button size="large" type="primary" @click="expTemplate">评分结果打印</el-button>
-          <el-button size="large" type="primary" @click="staticScore">成绩统计</el-button>
+          <el-button size="large" v-if="checkAuth" type="primary" @click="expTemplate">评分结果打印</el-button>
+          <el-button size="large" v-if="checkAuth" type="primary" @click="staticScore">成绩统计</el-button>
         </el-header>
         <el-table :data="dataList" v-loading="loading"
                   style="width: 100%;background: transparent;overflow:auto;"
@@ -16,7 +16,7 @@
             </template>
             <el-input prop="TRItemid" type="hidden" autocomplete="off"></el-input>
           </el-table-column>
-          <el-table-column prop="cgmc" label="成果名称"  align="center">
+          <el-table-column prop="cgmc" label="成果名称"  width="400" align="center">
           </el-table-column>
           <el-table-column prop="xypx" label="学院排序" width="80" align="center">
           </el-table-column>
@@ -24,8 +24,8 @@
           <el-table-column
             v-for="(item,index) in theadList"
             :key="index"
-            label="***"
-            width="80"
+            :label="item.user.username"
+            width="150"
             prop="pf"
             align="center"
           >
@@ -35,11 +35,11 @@
             </template>
           </el-table-column>
           <!-- 动态生成列结束 -->
-          <el-table-column prop="avgScore" label="平均分" width="120" align="center">
+          <el-table-column v-if="checkAuth" prop="avgScore" label="平均分"  align="center">
           </el-table-column>
-          <el-table-column prop="itemorder" label="推荐排序" width="80" align="center">
+          <el-table-column v-if="checkAuth" prop="itemorder" label="推荐排序"  align="center">
           </el-table-column>
-          <el-table-column prop="absAvgScore" label="绝对平均分" width="100" align="center">
+          <el-table-column v-if="checkAuth" prop="absAvgScore" label="绝对平均分"  align="center">
           </el-table-column>
         </el-table>
       </el-col>
@@ -89,7 +89,9 @@ export default {
   },
   methods: {
     async initData () {
-      this.$axios.post('/imp/checkStatic')
+      let fd = new FormData()
+      fd.append('psr', sessionStorage.getItem('userid'))
+      this.$axios.post('/imp/checkStatic', fd)
         .then(res => {
           if (res.data.length === 0) {
           } else {

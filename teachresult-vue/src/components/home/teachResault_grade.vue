@@ -5,18 +5,28 @@
       <el-col style="height: 100%">
         <el-header style="text-align: left;background-color:white">
           <el-button type="primary" v-if="!checkAuth&visible" @click="toSend" round>提交</el-button>
+          <el-button type="primary" v-if="!checkAuth&tjflag" @click="toCancelSend" round>取消提交</el-button>
           <el-button type="primary" v-if="checkAuth" @click="dialogFormVisible = true">上传<i
             class="el-icon-upload el-icon&#45;&#45;right"></i>
           </el-button>
+          <el-button type="primary" v-if="checkAuth" @click="delAll" round>批量删除</el-button>
+          <el-button type="primary" v-if="checkAuth" @click="openTime" round>提交时间控制</el-button>
         </el-header>
-        <el-table :data="tableData" style="width: 100%;background: transparent;overflow:auto;"
+        <el-table :data="tableData"
+                  style="width: 100%;background: transparent;overflow:auto;"
+                  ref="multipleTable"
+                  tooltip-effect="dark"
+                  @selection-change="handleSelectionChange"
                   height="100%">
+          <el-table-column
+            type="selection"
+            width="50">
+          </el-table-column>
           <el-table-column prop="index" label="序号" type="index" width="80" align="center">
             <el-input prop="TRItemid" type="hidden" autocomplete="off"></el-input>
             <template slot-scope="scope">
               <span>{{scope.$index + 1}}</span>
             </template>
-            <el-input prop="TRItemid" type="hidden" autocomplete="off"></el-input>
           </el-table-column>
           <el-table-column prop="cgmc" label="成果名称" width="350" align="center">
           </el-table-column>
@@ -86,6 +96,32 @@
             </el-upload>
           </el-row>
         </el-dialog>
+        <el-dialog title="评分时间控制" :visible.sync="dialogTimeVisible" style="text-align: left;">
+            <el-form :model="timeFormData"  ref="timeFormData">
+              <!--<el-form-item label="开始时间" :label-width="formLabelWidth" prop="pf">
+                <el-input v-model="timeFormData.kssj" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="结束时间" :label-width="formLabelWidth" prop="pf">
+                <el-input v-model="timeFormData.jssj" autocomplete="off"></el-input>
+              </el-form-item>-->
+              <div class="block">
+                <span class="demonstration"></span>
+                <el-date-picker
+                  v-model="timeFormData.sj"
+                  type="datetimerange"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期">
+                </el-date-picker>
+              </div>
+            </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogTimeVisible=false">取 消</el-button>
+            <el-button type="primary" @click="submitTime()">保 存</el-button>
+          </div>
+        </el-dialog>
       </el-col>
     </el-row>
   </div>
@@ -126,15 +162,23 @@ export default {
     return {
       tableData: [],
       visible: false,
+      tjflag: false,
       items: [],
       dialogFormVisible: false,
       dialogPfVisible: false,
+      dialogTimeVisible: false,
       fileList: [],
+      multipleSelection: [],
       formData: {
         pf: '',
         xgyj: '',
         TRItemid: '',
         cgmc: ''
+      },
+      timeFormData: {
+        tjkssj: '',
+        tjjssj: '',
+        sj: ''
       },
       rules: {
         pf: [{required: true, message: '请输入成果评分', trigger: 'blur'},
@@ -333,9 +377,10 @@ export default {
         this.$axios.post('/imp/toSend', fd, {responseType: 'utf-8'}).then(successResponse => {
           if (successResponse.data.code === 200) {
             alert(successResponse.data.msg)
+            this.tjflag = true
             this.initData()
           } else {
-            alert('删除失败,请检查网络是否可用')
+            alert('提交失败,请检查网络是否可用')
           }
         })
           .catch(failResponse => {
@@ -345,6 +390,106 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消提交'
+        })
+      })
+    },
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    },
+    delAll () {
+      console.log(this.multipleSelection)
+      let val = this.multipleSelection
+      if (val) {
+        let tritemids = ''
+        val.forEach((val, index) => {
+          tritemids += val.TRItemid + ','
+        })
+        this.$confirm('是否确定删除所选中数据?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let fd = new FormData()
+          fd.append('tritemids', tritemids)
+          this.$axios.post('/imp/delAllTRItem', fd, {responseType: 'utf-8'}).then(successResponse => {
+            if (successResponse.data.code === 200) {
+              alert(successResponse.data.msg)
+              this.tableData = []
+              this.initData()
+            } else {
+              alert('删除失败,请检查网络是否可用')
+            }
+          })
+            .catch(failResponse => {
+              console.log('')
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消提交'
+          })
+        })
+      } else {
+        alert('请选择要删除的教学成果项目')
+      }
+    },
+    submitTime () {
+      let sj = this.timeFormData.sj
+      let fd = new FormData()
+      fd.append('tjkssj', sj[0])
+      fd.append('tjjssj', sj[1])
+      this.$axios.post('/imp/saveControlTime', fd, {responseType: 'utf-8'}).then(successResponse => {
+        if (successResponse.data.code === 200) {
+          alert(successResponse.data.msg)
+          this.dialogTimeVisible = false
+        } else {
+          alert('时间控制设置失败')
+        }
+      })
+        .catch(failResponse => {
+          console.log('')
+        })
+    },
+    openTime () {
+      this.timeFormData.sj = ['2022-2-22 00:00:00', '2022-2-23 00:00:00']
+      this.$axios.post('/imp/checkItemKz', {responseType: 'utf-8'}).then(successResponse => {
+        if (successResponse.data.code === 200) {
+          let parse = JSON.parse(successResponse.data.msg)
+          console.log(parse)
+          this.timeFormData.sj = [parse.tjkssj, parse.tjjssj]
+          this.dialogTimeVisible = true
+        } else {
+          alert('时间控制设置失败')
+        }
+      })
+        .catch(failResponse => {
+          console.log('')
+        })
+    },
+    toCancelSend () {
+      this.$confirm('是否取消当前提交?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let fd = new FormData()
+        fd.append('psr', sessionStorage.getItem('userid'))
+        this.$axios.post('/imp/toCancelSend', fd, {responseType: 'utf-8'}).then(successResponse => {
+          if (successResponse.data.code === 200) {
+            alert(successResponse.data.msg)
+            this.tjflag = false
+            this.initData()
+          } else {
+            alert('提交失败,请检查网络是否可用')
+          }
+        })
+          .catch(failResponse => {
+            console.log('')
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已放弃取消提交'
         })
       })
     }

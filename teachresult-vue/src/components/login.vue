@@ -77,6 +77,14 @@ export default {
   },
   methods: {
     async login () {
+      if (!this.loginForm.username) {
+        alert('请输入用户名')
+        return false
+      }
+      if (!this.loginForm.password) {
+        alert('请输入密码')
+        return false
+      }
       this.$axios
         .post('/login', {
           username: this.loginForm.username,
