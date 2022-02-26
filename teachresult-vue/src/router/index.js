@@ -7,7 +7,9 @@ import AppIndex from '@/components/home/AppIndex'
 import Login from '@/components/Login'
 import Grade from '@/components/home/teachResault_grade'
 import Check from '@/components/home/teachResault_check'
-import manage from '@/components/manage'
+import Show from '@/components/home/teachResault_show'
+import File from '@/components/home/teachResault_file'
+import manage from '@/components/headTop'
 import home from '@/components/home/home'
 
 Vue.use(Router)
@@ -44,6 +46,16 @@ export default new Router({
         path: '/check',
         name: 'teachResault_check',
         component: Check,
+        meta: {requireAuth: true}
+      }, {
+        path: '/show',
+        name: 'teachResault_show',
+        component: Show,
+        meta: {requireAuth: true}
+      }, {
+        path: '/file',
+        name: 'teachResault_file',
+        component: File,
         meta: {requireAuth: true}
       }
       ]

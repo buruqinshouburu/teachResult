@@ -6,26 +6,31 @@
         <el-header style="text-align: left;background-color:white">
           <el-button size="large" v-if="checkAuth" type="primary" @click="expTemplate">评分结果打印</el-button>
           <el-button size="large" v-if="checkAuth" type="primary" @click="staticScore">成绩统计</el-button>
+          <el-button size="large" v-if="checkAuth" type="primary" @click="initData('1')">本科成果评分</el-button>
+          <el-button size="large" v-if="checkAuth" type="primary" @click="initData('2')">研究生成果评分</el-button>
+          <el-button size="large" v-if="checkAuth" type="primary" @click="initData()">全部成果评分</el-button>
         </el-header>
         <el-table :data="dataList" v-loading="loading"
-                  style="width: 100%;background: transparent;overflow:auto;"
+                  style="background: transparent;"
                   height="100%">
-          <el-table-column prop="index" label="序号" type="index" width="80" align="center">
+          <el-table-column prop="index" label="序号"  type="index" min-width="80" align="center">
             <template slot-scope="scope">
               <span>{{scope.$index + 1}}</span>
             </template>
             <el-input prop="TRItemid" type="hidden" autocomplete="off"></el-input>
           </el-table-column>
-          <el-table-column prop="cgmc" label="成果名称"  width="400" align="center">
+          <el-table-column prop="cgmc"  label="成果名称"  min-width="400" align="center">
           </el-table-column>
-          <el-table-column prop="xypx" label="学院排序" width="80" align="center">
+          <el-table-column prop="dw"  label="申报单位"  min-width="200" align="center">
+          </el-table-column>
+          <el-table-column prop="xypx"   label="单位排序/上报项目" min-width="160" align="center">
           </el-table-column>
           <!-- 动态生成列 -->
           <el-table-column
             v-for="(item,index) in theadList"
             :key="index"
             :label="item.user.username"
-            width="150"
+            min-width="100"
             prop="pf"
             align="center"
           >
@@ -35,11 +40,11 @@
             </template>
           </el-table-column>
           <!-- 动态生成列结束 -->
-          <el-table-column v-if="checkAuth" prop="avgScore" label="平均分"  align="center">
+          <el-table-column v-if="checkAuth" min-width="100" fixed="right" sortable prop="avgScore" label="平均分"  align="center">
           </el-table-column>
-          <el-table-column v-if="checkAuth" prop="itemorder" label="推荐排序"  align="center">
+          <el-table-column v-if="checkAuth"  min-width="100" fixed="right" sortable prop="itemorder" label="推荐排序"  align="center">
           </el-table-column>
-          <el-table-column v-if="checkAuth" prop="absAvgScore" label="绝对平均分"  align="center">
+          <el-table-column v-if="checkAuth"  min-width="120" fixed="right" sortable prop="absAvgScore" label="绝对平均分"  align="center">
           </el-table-column>
         </el-table>
       </el-col>
@@ -50,7 +55,7 @@
 </style>
 
 <script>
-import headTop from '../headTop'
+// import headTop from '../headTop'
 
 export default {
   filters: {
@@ -71,9 +76,9 @@ export default {
       loading: false
     }
   },
-  components: {
+  /* components: {
     headTop
-  },
+  }, */
   computed: {
     checkAuth () {
       // 简易权限判断
@@ -88,13 +93,19 @@ export default {
     this.initData()
   },
   methods: {
-    async initData () {
+    async initData (type) {
+      let url = '/imp/checkStatic'
+      if (type) {
+        url = '/imp/checkStatic?type=' + type
+      }
       let fd = new FormData()
       fd.append('psr', sessionStorage.getItem('userid'))
-      this.$axios.post('/imp/checkStatic', fd)
+      this.$axios.post(url, fd)
         .then(res => {
           if (res.data.length === 0) {
           } else {
+            this.theadList = []
+            this.dataList = []
             res.data.forEach(tritem => {
               if (this.theadList.length === 0) {
                 this.theadList = tritem.reviewList
@@ -102,6 +113,7 @@ export default {
               let tableItem = {
                 cgmc: tritem.cgmc,
                 xypx: tritem.xypx,
+                dw: tritem.dw,
                 avgScore: tritem.avgScore,
                 absAvgScore: tritem.absAvgScore,
                 itemorder: tritem.itemorder,
@@ -110,13 +122,6 @@ export default {
               }
               this.dataList.push(tableItem)
             })
-            /* this.theadList = res.dateArr
-            // res.rows中每项的colprops属性中包启有所有表头[2019,2018,2017,2016]列对应，用filter后就可以将对应的值取出处理
-            // 如res.rows[0]为一个{
-            //    colprops: ['8%', '9.6%', '6.4%', '6%']，
-            // }
-            this.dataList = res.rows
-            this.getTRData(res.data) */
           }
         })
         .catch(failResponse => {
@@ -145,7 +150,7 @@ export default {
         this.$axios.post('/imp/staticScore')
           .then(res => {
             if (res.data.code === 200) {
-              alert(res.data.msg)
+              this.$alert(res.data.msg)
               this.dataList = []
               this.initData()
               this.loading = false

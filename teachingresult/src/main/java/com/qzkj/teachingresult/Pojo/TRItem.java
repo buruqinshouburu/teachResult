@@ -1,8 +1,11 @@
 package com.qzkj.teachingresult.Pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,42 +14,52 @@ import java.util.List;
 @Entity
 @Table(name = "TRItem")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
-public class TRItem {
+@DynamicInsert(value = true)
+@DynamicUpdate(value=true)
+public class TRItem{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private String id ;
     /**
      * 成果名称
      */
+    @Column(name="cgmc")
     private String cgmc ;
     /**
      * 主要完成人
      */
+    @Column(name="zywcr")
     private String zywcr ;
     /**
      * 成果内容类别
      */
-    private String chnrlb ;
+    @Column(name="cgnrlb")
+    private String cgnrlb ;
     /**
      * 单位
      */
+    @Column(name="dw")
     private String dw ;
     /**
      * 学院排序
      */
+    @Column(name="xypx")
     private String xypx ;
     /**
      * 平均分
      */
+    @Column(name="avg_Score")
     private Double avgScore;
     /**
      * 绝对平均分
      */
+    @Column(name="abs_Avg_Score")
     private Double absAvgScore;
     /**
      * 推荐排序
      */
+    @Column(name="itemorder")
     private Integer itemorder;
 
     @Transient
@@ -93,11 +106,11 @@ public class TRItem {
     }
 
     public String getChnrlb() {
-        return chnrlb;
+        return cgnrlb;
     }
 
     public void setChnrlb(String chnrlb) {
-        this.chnrlb = chnrlb;
+        this.cgnrlb = chnrlb;
     }
 
     public String getDw() {
@@ -146,7 +159,7 @@ public class TRItem {
                 "id='" + id + '\'' +
                 ", cgmc='" + cgmc + '\'' +
                 ", zywcr='" + zywcr + '\'' +
-                ", chnrlb='" + chnrlb + '\'' +
+                ", cgnrlb='" + cgnrlb + '\'' +
                 ", dw='" + dw + '\'' +
                 ", xypx='" + xypx + '\'' +
                 ", avgScore=" + avgScore +

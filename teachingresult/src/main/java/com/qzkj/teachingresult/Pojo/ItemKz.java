@@ -25,6 +25,13 @@ public class ItemKz {
     @Column
     private String tjkssj ;
     /**
+     * 评价总分
+     */
+    @Column
+    private String pjzf;
+    @Column
+    private String xms;
+    /**
      * 主要完成人
      */
     @Column
@@ -52,5 +59,21 @@ public class ItemKz {
 
     public void setTjjssj(String tjjssj) {
         this.tjjssj = tjjssj;
+    }
+
+    public String getPjzf() {
+        return pjzf;
+    }
+
+    public void setPjzf(String pjzf) {
+        this.pjzf = pjzf;
+    }
+
+    public String getXms() {
+        return xms;
+    }
+
+    public void setXms(String xms) {
+        this.xms = xms;
     }
 }

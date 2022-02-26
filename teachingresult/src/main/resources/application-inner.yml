@@ -3,12 +3,19 @@ spring:
     #  驱动
     driver-class-name: org.h2.Driver
     # h2 内存数据库 内存模式连接配置 库名: mybatis
-   # url: jdbc:h2:mem:mybatis;db_close_delay=-1
-    url: jdbc:h2:mem:testdb;db_close_delay=-1;CACHE_SIZE=8192
-    # 初始化数据表 DDL
-    schema: classpath:sql/init.sql
-    #  初始化数据 DML
-    data: classpath:sql/data.sql
+    # url: jdbc:h2:mem:mybatis;db_close_delay=-1
+    # url: jdbc:h2:mem:testdb;db_close_delay=-1;CACHE_SIZE=8192
+    url: jdbc:h2:file:D:/h2/data/testdb;db_close_delay=-1;CACHE_SIZE=8192;AUTO_SERVER=TRUE
+    jpa:
+      # 初始化数据表 DDL
+      #schema: -classpath:sql/init.sql
+      #  初始化数据 DML
+      #data: -classpath:sql/data.sql
+      #generate-ddl: false
+      show-sql: true
+      hibernate:
+        ddl-auto: none
+      database-platform: org.hibernate.dialect.H2Dialect
   h2:
     #    开启console 访问 默认false
     console:

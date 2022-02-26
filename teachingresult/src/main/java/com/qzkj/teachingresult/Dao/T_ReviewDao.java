@@ -16,7 +16,11 @@ public interface T_ReviewDao extends JpaRepository<T_Review,Integer> {
 
     List<T_Review> findByTRItemid(String tritemid);
 
+    List<T_Review> findByPsr(String psr);
+
     List<T_Review> findByTRItemidAndPsr(String tritemid,String psr);
+
+    List<T_Review> findByTRItemidAndPsr(String tritemid,String psr,Sort sort);
 
 
 

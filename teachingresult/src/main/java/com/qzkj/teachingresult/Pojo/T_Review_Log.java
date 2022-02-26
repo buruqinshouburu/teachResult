@@ -10,13 +10,13 @@ import javax.persistence.*;
  * 教学成果评分表
  */
 @Entity
-@Table(name = "T_Review")
+@Table(name = "T_Review_Log")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
 @DynamicInsert(value = true)
 @DynamicUpdate(value=true)
-public class T_Review {
+public class T_Review_Log {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private String id ;
     /**
@@ -24,11 +24,6 @@ public class T_Review {
      */
     @Column
     private String TRItemid;
-    /**
-     * 评审人ID
-     */
-    @Column
-    private String psr;
     /**
      * 评分
      */
@@ -39,30 +34,13 @@ public class T_Review {
      */
     @Column
     private String xgyj;
+
     /**
-     * 是否提交 1:是 2:否
+     * itemLog的ID
      */
     @Column
-    private String istj;
+    private String logid;
 
-    @Transient
-    private User user;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getIstj() {
-        return istj;
-    }
-
-    public void setIstj(String istj) {
-        this.istj = istj;
-    }
 
     public String getId() {
         return id;
@@ -80,13 +58,6 @@ public class T_Review {
         this.TRItemid = TRItemid;
     }
 
-    public String getPsr() {
-        return psr;
-    }
-
-    public void setPsr(String psr) {
-        this.psr = psr;
-    }
 
     public Double getPf() {
         return pf;
@@ -104,14 +75,12 @@ public class T_Review {
         this.xgyj = xgyj;
     }
 
-    @Override
-    public String toString() {
-        return "T_Review{" +
-                "id='" + id + '\'' +
-                ", TRItemid='" + TRItemid + '\'' +
-                ", psr='" + psr + '\'' +
-                ", pf=" + pf +
-                ", xgyj='" + xgyj + '\'' +
-                '}';
+    public String getLogid() {
+        return logid;
     }
+
+    public void setLogid(String logid) {
+        this.logid = logid;
+    }
+
 }

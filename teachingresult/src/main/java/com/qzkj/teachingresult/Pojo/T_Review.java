@@ -1,6 +1,8 @@
 package com.qzkj.teachingresult.Pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
@@ -10,31 +12,37 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_Review")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
+@DynamicInsert(value = true)
+@DynamicUpdate(value=true)
 public class T_Review {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private String id ;
     /**
      * 教学成果ID
      */
+    @Column
     private String TRItemid;
     /**
      * 评审人ID
      */
+    @Column
     private String psr;
     /**
      * 评分
      */
+    @Column
     private Double pf;
     /**
      * 修改意见
      */
+    @Column
     private String xgyj;
     /**
      * 是否提交 1:是 2:否
      */
+    @Column
     private String istj;
 
     @Transient

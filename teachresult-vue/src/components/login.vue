@@ -3,7 +3,7 @@
   <section class="login-container">
     <el-form class="" label-position="left"
              label-width="0px">
-      <h3 class="login_title">教学成果打分系统登录</h3>
+      <h3 class="login_title">教学成果奖评审系统</h3>
       <el-form-item :rules="rules">
         <el-input type="text" v-model="loginForm.username"
                   auto-complete="off" placeholder="账号"></el-input>

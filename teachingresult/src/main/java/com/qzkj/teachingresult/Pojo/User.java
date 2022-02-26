@@ -1,6 +1,8 @@
 package com.qzkj.teachingresult.Pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
@@ -10,18 +12,22 @@ import javax.persistence.*;
 @Entity
 @Table(name = "User")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
+@DynamicInsert(value = true)
+@DynamicUpdate(value=true)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private String id;
     /**
      * 用户名
      */
+    @Column
     private String username;
     /**
      * 用户密码
      */
+    @Column
     private String password;
 
     public String getId() {
